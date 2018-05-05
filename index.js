@@ -28,11 +28,29 @@ const drawGrid = (grid) => {
 }
 
 const regenerate = (parents) => {
-  const mothers = parents.slice(0, parents.length / 2);
-  const fathers = parents.slice(parents.length / 2, parents.length);
-  const childrenOne = mothers.map((mother, idx) => breedGrids(mother, fathers[idx]));
-  const childrenTwo = mothers.map((mother, idx) => breedGrids(mother, fathers[fathers.length - idx - 1]));
-  return parents.concat(childrenOne).concat(childrenTwo);
+  const children = [];
+  const parentsLength = Array.from(new Array(parents.length), () => 0);
+  parentsLength.forEach(idx => {
+    const mother = parents.random();
+    const father = parents.random();
+    console.log(mother, father)
+    children.push(breedGrids(mother, father));
+  });
+  return parents.concat(children);
+}
+
+
+const getNeighbors = (grid, [x, y]) => {
+   const neighbors = [];
+   const range = Array.from(new Array(3), (_, i) => i - 1);
+   range.forEach(x => {
+     range.forEach(y => {
+       if (grid[x] && grid[x][y] && (x !== 0 || y !== 0)) {
+         neighbors.push(grid[x][y]);
+       }
+     });
+   });
+   return neighbors;
 }
 
 const breedGrids = (motherGrid, fatherGrid) => {
@@ -66,8 +84,8 @@ const isBluish = (color) => {
 
 const parseHex = (color) => {
   const r = parseInt(color.slice(0, 2), 16);
-  const b = parseInt(color.slice(2, 4), 16);
-  const g = parseInt(color.slice(4, 6), 16);
+  const g = parseInt(color.slice(2, 4), 16);
+  const b = parseInt(color.slice(4, 6), 16);
   return {r, g, b}
 }
 
@@ -105,9 +123,8 @@ const rankGrids = (grids, fitnessFunc) => {
   return grids.sort((a, b) => fitnessFunc(b) - fitnessFunc(a));
 }
 
+Array.prototype.random = function() {
+  return this[Math.floor(Math.random() * this.length)];
+}
+
 run()
-
-
-// const myGrid = randomColorTenByTenGrid()
-// console.log(redFitness(myGrid))
-// const nodeGrid = drawGrid(myGrid)
