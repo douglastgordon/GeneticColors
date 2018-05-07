@@ -1,39 +1,55 @@
 // Code dealing with judging fitness of grids
 
 
+// Independent Fitness functions
+
 // returns fitness of grid according to unweighted, binary fitness of each cell, given a fitness function
-const fitness = isFitFunc => grid => {
+const independentFitness = isFitFunc => grid => {
   return grid.flatten().reduce((acc, cell) => acc + (isFitFunc(cell) ? 1 : 0), 0);
 };
 
+// returns fitness of grid according to unweighted, binary fitness of each cell, given a fitness function
+const continuousIndependentFitness = fitnessScore => grid => {
+  return grid.flatten().reduce((acc, cell) => acc + fitnessScore(cell), 0);
+};
+
 // returns binary fitness of color, according to "redness"
-const isReddish = (color) => {
+const isReddish = color => {
   const {r, g, b} = parseHex(color);
   return g + b < r;
 };
 
 // binary fitness of color, according to "blueness"
-const isBluish = (color) => {
+const isBluish = color => {
   const {r, g, b} = parseHex(color);
   return r + g < b;
 };
 
 // binary fitness of color, according to "greeness"
-const isGreenish = (color) => {
+const isGreenish = color => {
   const {r, g, b} = parseHex(color);
   return r + b < g;
 };
 
+const rednessScore = color => {
+  const {r, g, b} = parseHex(color);
+  return r + (255 - b) + (255 - g);
+}
+
 // find fitness score of grid, according to "redness"
-const redFitness = fitness(isReddish);
+const redFitness = independentFitness(isReddish);
 
 // find fitness score of grid, according to "blueness"
-const blueFitness = fitness(isBluish);
+const blueFitness = independentFitness(isBluish);
 
 // find fitness score of grid, according to "greenness"
-const greenFitness = fitness(isGreenish);
+const greenFitness = independentFitness(isGreenish);
+
+// find continuous fitness score of grid, trending to pure red
+const redContinuousFitness = continuousIndependentFitness(rednessScore);
 
 
+// Dependent (immediate neighbors) Fitness functions
 
 // returns fitness of grid according to relationship of each cell to its immediate neighbors, given a fitness function
 const dependentFitness = fitnessScoreFunc => grid => {
@@ -80,6 +96,85 @@ const getNeighbors = (grid, [row, col]) => {
    });
    return neighbors;
 };
+
+
+// Horizontal Stripe Fitness Function
+
+// returns fitness of grid, using two fitness functions applied to odd and even rows, each cell is independent
+const stripeFitness = (evenRowFitnessFunc, oddRowFitnessFunc) => grid => {
+  let score = 0;
+  grid.forEach((row, x) => {
+    row.forEach(cell => {
+      if (x % 2 === 0) {
+        score += (evenRowFitnessFunc(cell) ? 1 : 0);
+      } else {
+        score += (oddRowFitnessFunc(cell) ? 1 : 0);
+      }
+    })
+  })
+  return score;
+};
+
+const continuousStripeFitness = (evenRowFitnessScore, oddRowFitnessScore) => grid => {
+  let score = 0;
+  grid.forEach((row, x) => {
+    row.forEach(cell => {
+      if (x % 2 === 0) {
+        score += evenRowFitnessScore(cell);
+      } else {
+        score += oddRowFitnessScore(cell);
+      }
+    })
+  })
+  return score;
+};
+
+const continuousStripeFitnessWithGeneral = (evenRowFitnessScore, oddRowFitnessScore, generalFitness) => grid => {
+  let score = 0;
+  grid.forEach((row, x) => {
+    row.forEach(cell => {
+      if (x % 2 === 0) {
+        score += evenRowFitnessScore(cell);
+      } else {
+        score += oddRowFitnessScore(cell);
+      }
+      score += generalFitness(cell)
+    })
+  })
+  return score;
+};
+
+// rates whitness of color from 0 (black) -> 765 (white)
+const whitenessScore = color => {
+  const { r, g, b } = parseHex(color);
+  return r + g + b;
+};
+
+const blacknessScore = color => 765 - whitenessScore(color);
+
+const redGreenStripeFitness = stripeFitness(isReddish, isGreenish);
+const blackWhiteStripeFitness = continuousStripeFitness(whitenessScore, blacknessScore);
+const darkPaleRedStripeFitness = continuousStripeFitnessWithGeneral(whitenessScore, blacknessScore, rednessScore);
+
+
+// holistic fitness
+
+const holisticHomogeneityFitnessScore = grid => {
+  const red = [];
+  const green = []
+  const blue = [];
+  grid.forEach(row => {
+    row.forEach(color => {
+      const { r, g, b } = parseHex(color);
+      red.push(r);
+      green.push(g);
+      blue.push(b);
+    });
+  });
+
+  return (red.standardDeviation() + green.standardDeviation() + blue.standardDeviation());
+};
+
 
 // orders array of grids according to fitness, given fitness func
 const rankGrids = (grids, fitnessFunc) => {
