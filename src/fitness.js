@@ -31,9 +31,13 @@ const isGreenish = color => {
   return r + b < g;
 };
 
+
 const rednessScore = color => {
-  const {r, g, b} = parseHex(color);
-  return r + (255 - b) + (255 - g);
+  const { r, g, b } = parseHex(color);
+  const score = r - b - g;
+  const maxScore = 255 - 0 - 0;
+  const minScore = 0 - 255 - 255;
+  return normalizeFitnessScore(score, maxScore, minScore);
 }
 
 // find fitness score of grid, according to "redness"
@@ -176,9 +180,9 @@ const holisticHomogeneityFitnessScore = grid => {
 };
 
 
-// orders array of grids according to fitness, given fitness func
-const rankGrids = (grids, fitnessFunc) => {
-  return grids.sort((a, b) => fitnessFunc(b) - fitnessFunc(a));
+// normalizes fitness score of cell to 0-1 scale (so total grid score is 0 - 100)
+const normalizeFitnessScore = (score, maxScore, minScore=0) => {
+  return (score - minScore) / (maxScore - minScore);
 };
 
 // returns object of decimal rgb values for hex color

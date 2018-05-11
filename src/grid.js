@@ -6,11 +6,8 @@ const blackGrid = (x, y=x) => Array.from(new Array(x), () => Array.from(new Arra
 // takes 2d array and returns grid with each cell filled with random rgb hex value
 const randomizeColors = grid => grid.map(row => row.map(cell => randomColor()));
 
-// makes 10 by 10 sized 2d array of 0s
-const blackTenByTenGrid = blackGrid(10);
-
-// makes 10 by 10 sized 2d array of random rgb hex values
-const randomColorTenByTenGrid = () => randomizeColors(blackTenByTenGrid)
+// makes size x size  2d array of random rgb hex values
+const randomColorGrid = size => randomizeColors(blackGrid(size));
 
 // makes random rgb hex value
 const randomColor = () => randomHex() + randomHex() + randomHex();
