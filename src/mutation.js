@@ -7,8 +7,6 @@ const mutate = grid => {
 };
 
 const mutateXTimes = (grid, mutations) => {
-  for (let i = 0; i < mutations; i += 1) {
-    grid = mutate(grid);
-  }
-  return grid;
+  if (!mutations) return grid;
+  return mutateXTimes(mutate(grid), mutations - 1);
 };
