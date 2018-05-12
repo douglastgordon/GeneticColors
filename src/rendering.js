@@ -1,18 +1,14 @@
 // Code dealing with rendering of color grids on DOM
 
 // takes array of color grids, draws and appends them to DOM
-const drawGrids = (grids) => {
-  const gridsNode = document.getElementById("grids")
+const drawGrids = grids => {
   grids.forEach(grid => {
-    gridsNode.appendChild(drawGrid(grid));
+    appendGrid(makeGrid(grid));
   });
-  const line = document.createElement("div");
-  line.classList.add("line");
-  gridsNode.append(line);
 };
 
 // creates HTML table from color grid
-const drawGrid = (grid) => {
+const makeGrid = grid => {
   const tableNode = document.createElement("table");
   grid.forEach(row => {
     const rowNode = document.createElement("tr");
@@ -25,3 +21,17 @@ const drawGrid = (grid) => {
   });
   return tableNode;
 };
+
+// appends grid to page
+const appendGrid = grid => {
+  const gridsNode = document.getElementById("grids");
+  gridsNode.append(grid);
+}
+
+// draw line
+const drawLine = () => {
+  const gridsNode = document.getElementById("grids")
+  const line = document.createElement("div");
+  line.classList.add("line");
+  gridsNode.append(line);
+}

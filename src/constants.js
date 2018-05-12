@@ -7,10 +7,10 @@ const GENE_SIZE = 10;
 const POPULATION = 100;
 
 // total number of generations
-const GENERATIONS = 500;
+const GENERATIONS = 1000;
 
 // percentage of cells mutated when breeding
 const MUTATION_RATE= 3;
 
 // cycle will break when average fitness score reaches this level
-const AVERAGE_FITNESS_SCORE_TARGET = 80;
+const AVERAGE_FITNESS_SCORE_TARGET = 99;

@@ -75,11 +75,14 @@ const neighborFitness = (cellColor, neighbors=[], neighborComparisonFunc) => {
 const differenceScore = (colorA, colorB) => {
   const { r: rA, g: gA, b: bA } = parseHex(colorA);
   const { r: rB, g: gB, b: bB } = parseHex(colorB);
-  return (Math.abs(rA - rB) + Math.abs(gA - gB) + Math.abs(bA - bB));
+  const score = (Math.abs(rA - rB) + Math.abs(gA - gB) + Math.abs(bA - bB));
+  const maxScore = 255 + 255 + 255;
+  const minScore = 0 + 0 + 0;
+  return normalizeFitnessScore(score, maxScore, minScore);
 };
 
 // compares closenses of two colors: the higher the score, the more similar the colors
-const similarityScore = (colorA, colorB) => differenceScore(colorA, colorB) * -1;
+const similarityScore = (colorA, colorB) => 1 - differenceScore(colorA, colorB);
 
 // dependentFitness function for difference between cells
 const differentFitness = dependentFitness(differenceScore);
@@ -162,8 +165,7 @@ const darkPaleRedStripeFitness = continuousStripeFitnessWithGeneral(whitenessSco
 
 
 // holistic fitness
-
-const holisticHomogeneityFitnessScore = grid => {
+const holisticHomogeneityFitness = grid => {
   const red = [];
   const green = []
   const blue = [];
@@ -176,12 +178,27 @@ const holisticHomogeneityFitnessScore = grid => {
     });
   });
 
-  return (red.standardDeviation() + green.standardDeviation() + blue.standardDeviation());
+  const score = red.standardDeviation() + green.standardDeviation() + blue.standardDeviation();
+  const minScore = 127.5 + 127.5 + 127.5;
+  const maxScore = 0 + 0 + 0;
+  return normalizeFitnessScore(score, maxScore, minScore);
 };
 
+const similarityToTarget = targetGrid => grid => {
+  let score = 0
+  grid.forEach((row, x) => {
+    row.forEach((cell, y) => {
+      const targetCell = targetGrid[x][y];
+      score += similarityScore(cell, targetCell);
+    });
+  });
+  return score;
+};
+
+const similarityToMondrian = similarityToTarget(mondrianGrid());
 
 // normalizes fitness score of cell to 0-1 scale (so total grid score is 0 - 100)
-const normalizeFitnessScore = (score, maxScore, minScore=0) => {
+const normalizeFitnessScore = (score, maxScore, minScore) => {
   return (score - minScore) / (maxScore - minScore);
 };
 

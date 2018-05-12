@@ -1,7 +1,6 @@
 // Code for playthrough of genetic algorithm
 
-const FITNESS_FUNC = redContinuousFitness //holisticHomogeneityFitnessScore
-
+const FITNESS_FUNC = similarityToMondrian
 
 // plays through lifecycle
 const run = (population, generations) => {
@@ -33,7 +32,7 @@ const meetsBreakCondition = population => {
 const sideEffects = (population, generations) => {
   console.log("generation #", GENERATIONS - generations);
   logGenerationInfo(population);
-  if (generations % 100 === 0) {
+  if (generations % 50 === 0) {
     drawGrids(population);
   }
 };
@@ -49,3 +48,4 @@ const logGenerationInfo = population => {
 
 const initalPopulation = Array.from(new Array(POPULATION), () => randomColorGrid(GENE_SIZE));
 run(initalPopulation, GENERATIONS);
+// drawGrid()

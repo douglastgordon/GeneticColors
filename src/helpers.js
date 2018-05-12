@@ -24,3 +24,5 @@ Array.prototype.mean = function() {
 Array.prototype.standardDeviation = function() {
   return Math.sqrt(this.map(val => Math.pow(val - this.mean(), 2)).mean());
 }
+
+console.log([0,0,255,255,0].standardDeviation())
