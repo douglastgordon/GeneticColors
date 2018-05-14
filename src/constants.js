@@ -13,4 +13,4 @@ const GENERATIONS = 1000;
 const MUTATION_RATE= 3;
 
 // cycle will break when average fitness score reaches this level
-const AVERAGE_FITNESS_SCORE_TARGET = 99;
+const AVERAGE_FITNESS_SCORE_TARGET = 100;

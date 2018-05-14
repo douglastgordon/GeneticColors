@@ -5,6 +5,7 @@ const drawGrids = grids => {
   grids.forEach(grid => {
     appendGrid(makeGrid(grid));
   });
+  drawLine();
 };
 
 // creates HTML table from color grid
@@ -27,6 +28,9 @@ const appendGrid = grid => {
   const gridsNode = document.getElementById("grids");
   gridsNode.append(grid);
 }
+
+// draws a grid
+const drawGrid = grid => appendGrid(makeGrid(grid));
 
 // draw line
 const drawLine = () => {

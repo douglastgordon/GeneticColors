@@ -40,6 +40,14 @@ const rednessScore = color => {
   return normalizeFitnessScore(score, maxScore, minScore);
 }
 
+const greennessScore = color => {
+  const { r, g, b } = parseHex(color);
+  const score = g - b - r;
+  const maxScore = 255 - 0 - 0;
+  const minScore = 0 - 255 - 255;
+  return normalizeFitnessScore(score, maxScore, minScore);
+}
+
 // find fitness score of grid, according to "redness"
 const redFitness = independentFitness(isReddish);
 
@@ -51,6 +59,9 @@ const greenFitness = independentFitness(isGreenish);
 
 // find continuous fitness score of grid, trending to pure red
 const redContinuousFitness = continuousIndependentFitness(rednessScore);
+
+// find continuous fitness score of grid, trending to pure green
+const greenContinuousFitness = continuousIndependentFitness(greennessScore);
 
 
 // Dependent (immediate neighbors) Fitness functions
@@ -159,7 +170,7 @@ const whitenessScore = color => {
 
 const blacknessScore = color => 765 - whitenessScore(color);
 
-const redGreenStripeFitness = stripeFitness(isReddish, isGreenish);
+const redGreenStripeFitness = stripeFitness(rednessScore, greennessScore);
 const blackWhiteStripeFitness = continuousStripeFitness(whitenessScore, blacknessScore);
 const darkPaleRedStripeFitness = continuousStripeFitnessWithGeneral(whitenessScore, blacknessScore, rednessScore);
 
@@ -184,6 +195,8 @@ const holisticHomogeneityFitness = grid => {
   return normalizeFitnessScore(score, maxScore, minScore);
 };
 
+
+// finds similarity to target
 const similarityToTarget = targetGrid => grid => {
   let score = 0
   grid.forEach((row, x) => {
